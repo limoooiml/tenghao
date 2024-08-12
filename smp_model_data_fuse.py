@@ -1,4 +1,6 @@
 import os
+os.environ['NO_ALBUMENTATIONS_UPDATE'] = '1'
+
 import re
 import argparse
 import torch
@@ -16,7 +18,7 @@ import cv2
 from sklearn.model_selection import train_test_split
 import pickle
 
-os.environ['NO_ALBUMENTATIONS_UPDATE'] = '1'
+
 
 
 class SegmentationDataset(Dataset):
@@ -116,7 +118,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset_path", type=str, required=True, help="Directory containing the dataset with rgb, depth, and masks subdirectories")
     parser.add_argument("--output_dir", type=str, required=True, help="Directory to save outputs")
-    parser.add_argument("--model_pth_path", type=str, default="./", required=False, help="Path to read model_pth")
+    parser.add_argument("--model_pth_dir_path", type=str, default="./", required=False, help="dir Path to read model_pth")
     parser.add_argument("--train", action='store_true', help="Whether to train the model")
     parser.add_argument("--test", action='store_true', help="Whether to test the model")
     parser.add_argument("--epochs", type=int, default=25, help="Number of epochs to train")
@@ -198,11 +200,11 @@ def main():
     if args.train:
         model = train(model, train_loader, criterion, optimizer, args.epochs, device)
         os.makedirs(args.model_pth_path, exist_ok=True)
-        torch.save(model.state_dict(), os.path.join(args.model_pth_path, 'model.pth'))
+        torch.save(model.state_dict(), os.path.join(args.model_pth_dir_path, 'model.pth'))
         print('===========train done===========')
         
     if args.test:
-        model.load_state_dict(torch.load(os.path.join(args.model_pth_path, 'model.pth')))
+        model.load_state_dict(torch.load(os.path.join(args.model_pth_dir_path, 'model.pth')))
         visualize_results(model, val_loader, device, os.path.join(args.output_dir, 'test'))
         print('===========test done============')
 
