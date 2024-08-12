@@ -16,6 +16,8 @@ import cv2
 from sklearn.model_selection import train_test_split
 import pickle
 
+os.environ['NO_ALBUMENTATIONS_UPDATE'] = '1'
+
 
 class SegmentationDataset(Dataset):
     def __init__(self, image_files, depth_files, mask_files, transform=None):
